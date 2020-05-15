@@ -109,6 +109,7 @@ int get_option(){
 	return option;
 }
 
+//operation 1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 int check_if_product_in_market(Product ** product_list, char * barcode, int number_of_products)
 {
@@ -181,7 +182,7 @@ void add_product(Super_market * super_market, Product *product, char *barcode)
 	printf("The product %s -barcode:%s , added successfully\n", product_name, barcode);
 }
 
-Product *make_product()
+Product *make_product() // Making pointer to product
 {
 	Product *product = malloc(sizeof(Product));
 	product->barcode = malloc(BARCODE_LENGTH +1);
