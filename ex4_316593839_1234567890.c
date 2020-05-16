@@ -178,7 +178,7 @@ void add_product(Super_market* super_market, Product* product, char* barcode)
 
 	super_market->product_list[super_market->number_of_products] = product;
 	super_market->number_of_products++;
-	printf("The product %s -barcode:%s , added successfully\n", product_name, barcode);
+	printf("The product %s -barcode:%s ,added successfully\n", product_name, barcode);
 }
 
 Product* make_product()
@@ -346,7 +346,7 @@ void update_product(Product** product_list, int* number_of_products) {
 	}
 
 	printf("%s", update_barcode);
-	scanf("%s", &barcode);
+	scanf("\n%[^\n]s", &barcode);
 
 	for (i = 0; i < *number_of_products; i++) {
 		if (strcmp(barcode, product_list[i]->barcode) == 0) {
@@ -356,22 +356,22 @@ void update_product(Product** product_list, int* number_of_products) {
 			case 1:
 
 				printf("%s", update_product_name);
-				scanf("%s", product_list[i]->product_name);
+				scanf("\n%[^\n]s", product_list[i]->product_name);
 				return;
 
 			case 2:
 				printf("%s", update_product_category);
-				scanf("%s", product_list[i]->product_category);
+				scanf("\n%[^\n]s", product_list[i]->product_category);
 				return;
 
 			case 3:
 				printf("%s", update_product_number);
-				scanf("%s", product_list[i]->available);
+				scanf("%d", product_list[i]->available);
 				return;
 
 			case 4:
 				printf("%s", update_product_price);
-				scanf("%s", product_list[i]->price);
+				scanf("%lf", product_list[i]->price);
 				return;
 
 			case 5:
