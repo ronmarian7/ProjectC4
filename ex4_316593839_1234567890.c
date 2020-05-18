@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRTDBG_MAP_ALLOC
-#define MAX_NUM_PRODUCTS 20
+#define MAX_NUM_PRODUCTS 3
 #define MAX_PRODUCT_NAME_LENGTH 20
 #define MAX_CATEGORY_LENGTH 10
 #define BARCODE_LENGTH 12
@@ -123,15 +123,9 @@ int check_if_product_in_market(Product** product_list, char* barcode, int number
 				printf("%s", barcode_already_exist);
 				scanf("%d", &num_product_to_add);
 
-				if ((num_product_to_add + number_of_products) > MAX_NUM_PRODUCTS)
-				{
-					printf("%s", too_much_products);
-				}
-				else
-				{
 					product_list[i]->available += num_product_to_add;
 					printf("Additional %d products of %s added\n", num_product_to_add, product_list[i]->product_name);
-				}
+				
 				return 0;
 			}
 
@@ -147,27 +141,22 @@ void add_product(Super_market* super_market, Product* product, char* barcode)
 	double price;
 
 	strcpy(product->barcode, barcode);
-	printf("%s\n", (*product).barcode);
 
 	printf("%s", adding_product_name);
 	scanf("\n%[^\n]s", product_name);
 	strcpy(product->product_name, product_name);
-	printf("%s\n", (*product).product_name);
 
 	printf("%s", adding_product_category);
 	scanf("\n%[^\n]s", product_category);
 	strcpy(product->product_category, product_category);
-	printf("%s\n", (*product).product_category);
 
 	printf("%s", adding_product_number);
 	scanf("%d", &num_of_products);
 	(*product).available = num_of_products;
-	printf("%d\n", (*product).available);
 
 	printf("%s", adding_product_price);
 	scanf("%lf", &price);
 	(*product).price = price;
-	printf("%lf\n", (*product).price);
 
 	printf("%s", adding_product_date);
 	scanf("%d/%d/%d", &day, &month, &year);
@@ -184,10 +173,31 @@ void add_product(Super_market* super_market, Product* product, char* barcode)
 Product* make_product()
 {
 	Product* product = malloc(sizeof(Product));
+	if (NULL == product){
+		printf("Fatal error: memory allocation failed!\n");
+		exit (1);
+	}
 	product->barcode = malloc(BARCODE_LENGTH + 1);
+	if (NULL == product->barcode) {
+		printf("Fatal error: memory allocation failed!\n");
+		exit(1);
+	}
 	product->product_name = malloc(MAX_PRODUCT_NAME_LENGTH + 1);
+	if (NULL == product->product_name) {
+		printf("Fatal error: memory allocation failed!\n");
+		exit(1);
+	}
 	product->product_category = malloc(MAX_CATEGORY_LENGTH + 1);
+	if (NULL == product->product_category) {
+		printf("Fatal error: memory allocation failed!\n");
+		exit(1);
+	}
 	product->expire_date = malloc(sizeof(date));
+	if (NULL == product->expire_date) {
+		printf("Fatal error: memory allocation failed!\n");
+		exit(1);
+	}
+	
 	return product;
 }
 
@@ -232,12 +242,12 @@ void remove_product(Product** product_list, int* number_of_products) {
 					}
 					product_list = realloc(product_list, sizeof(Product*) * (*number_of_products - 1));
 					*number_of_products = *number_of_products - 1;
-					printf("%s", delete_barcode_succeed);
+					printf("%s\n", delete_barcode_succeed);
 					return;
 				}
 			}
 		}
-		printf("%s", delete_barcode_cant_find);
+		printf("%s\n", delete_barcode_cant_find);
 	} while (index);
 
 	remove_product(product_list, number_of_products);
@@ -303,14 +313,22 @@ void print_all_the_products(Product** product_list, int* number_of_products) {
 	for (i = 0; i < *number_of_products; i++)
 	{
 		printf("%s", print_products);
-		printf("%s %s", print_product_name, product_list[i]->product_name);
-		printf("%s %s", print_product_barcode, product_list[i]->barcode);
-		printf("%s %s", print_product_category, product_list[i]->product_category);
-		printf("%s %d", print_product_number, product_list[i]->available);
-		printf("%s %0.2lf", print_product_price, product_list[i]->price);
-		printf("%s %d/%d/%d", print_product_expireDate, product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
+		printf("%s%s", print_product_name, product_list[i]->product_name);
+		printf("%s%s", print_product_barcode, product_list[i]->barcode);
+		printf("%s%s", print_product_category, product_list[i]->product_category);
+		printf("%s%d", print_product_number, product_list[i]->available);
+		if(sizeof(product_list[i]->price) == sizeof(int))
+		{
+			printf("%s%d", print_product_price, product_list[i]->price);
+		}
+		else
+		{
+			printf("%s%0.2lf", print_product_price, product_list[i]->price);
+		}
+		
+		printf("%s%d/%d/%d", print_product_expireDate, product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
 	}
-	printf("%s %d\n", print_total_number, *number_of_products);
+	printf("%s%d\n", print_total_number, *number_of_products);
 }
 
 //operation 5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -376,13 +394,13 @@ void update_product(Product** product_list, int* number_of_products) {
 
 			case 5:
 				printf("%s", update_product_date);
-				scanf("%s", product_list[i]->expire_date);
+				scanf("%s/%s/%s", product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
 				return;
 			}
 		}
 	}
 
-	printf("%s", update_barcode_notFound);
+	printf("%s\n", update_barcode_notFound);
 }
 
 
@@ -407,7 +425,7 @@ int main()
 	char barcode[BARCODE_LENGTH];
 	Super_market supersal = { malloc(sizeof(Product*)), 0 };
 	Product* ptr;
-
+	if (supersal.product_list == NULL) exit(1);
 
 	do
 	{
@@ -428,13 +446,22 @@ int main()
 			{
 				if (supersal.number_of_products <= MAX_NUM_PRODUCTS)
 				{
-					supersal.product_list = realloc(supersal.product_list, sizeof(Product*) * (supersal.number_of_products + 1));
+					if(supersal.number_of_products == 0)
+					{
+						supersal.product_list = malloc(sizeof(Product*));
+						if (supersal.product_list == NULL) exit(1);
+					}
+					else
+					{
+						supersal.product_list = realloc(supersal.product_list, sizeof(Product*) * (supersal.number_of_products + 1));
+						if (supersal.product_list == NULL) exit(1);
+					}
 					ptr = make_product(); // pointer to new product 
 					add_product(&supersal, ptr, barcode);
 				}
 				else
 				{
-					printf("%s", too_much_products);
+					printf("%s\n", too_much_products);
 				}
 
 			}
