@@ -123,9 +123,9 @@ int check_if_product_in_market(Product** product_list, char* barcode, int number
 				printf("%s", barcode_already_exist);
 				scanf("%d", &num_product_to_add);
 
-					product_list[i]->available += num_product_to_add;
-					printf("Additional %d products of %s added\n", num_product_to_add, product_list[i]->product_name);
-				
+				product_list[i]->available += num_product_to_add;
+				printf("Additional %d products of %s added\n", num_product_to_add, product_list[i]->product_name);
+
 				return 0;
 			}
 
@@ -173,9 +173,9 @@ void add_product(Super_market* super_market, Product* product, char* barcode)
 Product* make_product()
 {
 	Product* product = malloc(sizeof(Product));
-	if (NULL == product){
+	if (NULL == product) {
 		printf("Fatal error: memory allocation failed!\n");
-		exit (1);
+		exit(1);
 	}
 	product->barcode = malloc(BARCODE_LENGTH + 1);
 	if (NULL == product->barcode) {
@@ -197,7 +197,7 @@ Product* make_product()
 		printf("Fatal error: memory allocation failed!\n");
 		exit(1);
 	}
-	
+
 	return product;
 }
 
@@ -257,30 +257,25 @@ void remove_product(Product** product_list, int* number_of_products) {
 //operation 3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void check_which_product_expired(Product** product_list, int* number_of_products) {
-	int expire_day, expire_month, expire_year, * p1, * p2, * p3;
+	int expire_day, expire_month, expire_year;
 	int i;
 
 	printf("%s", expired_date_check);
 	scanf("%d/%d/%d", &expire_day, &expire_month, &expire_year);
-
+	printf("%d/%d/%d", expire_day, expire_month, expire_year);
 	printf("%s", expired_products); // headline of expired products and then we print them.
 
 	for (i = 0; i < *number_of_products; i++) {
-		if (product_list[i]->expire_date->year > expire_year) {
-			printf("the expire year has past therefore.. EXPIRED!! - %s\n", product_list[i]->product_name);
+		if (product_list[i]->expire_date->year < expire_year) {
+
 
 		}
 		if (product_list[i]->expire_date->year == expire_year) {
-			printf("the date is still suspicious....\n");
-			if (product_list[i]->expire_date->month > expire_month) {
-				printf("the expire month has past therefore.. EXPIRED!! - %s\n", product_list[i]->product_name);
+			if (product_list[i]->expire_date->month < expire_month) {
 
 			}
 			if (product_list[i]->expire_date->month == expire_month) {
-				printf("the date is still suspicious.... - %s\n", product_list[i]->product_name);
-				if (product_list[i]->expire_date->day > expire_day) {
-					printf("the expire day has past therefore.. EXPIRED!! - %s\n", product_list[i]->product_name);
-
+				if (product_list[i]->expire_date->day < expire_day) {
 					printf("%s %s", expired_product_name, product_list[i]->product_name);
 					printf("%s %s", expired_product_barcode, product_list[i]->barcode);
 					printf("%s %d/%d/%d\n", expired_product_date, product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
@@ -293,9 +288,6 @@ void check_which_product_expired(Product** product_list, int* number_of_products
 	}
 
 }
-
-
-
 
 
 //operation 4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -317,7 +309,7 @@ void print_all_the_products(Product** product_list, int* number_of_products) {
 		printf("%s%s", print_product_barcode, product_list[i]->barcode);
 		printf("%s%s", print_product_category, product_list[i]->product_category);
 		printf("%s%d", print_product_number, product_list[i]->available);
-		if(sizeof(product_list[i]->price) == sizeof(int))
+		if (sizeof(product_list[i]->price) == sizeof(int))
 		{
 			printf("%s%d", print_product_price, product_list[i]->price);
 		}
@@ -325,7 +317,7 @@ void print_all_the_products(Product** product_list, int* number_of_products) {
 		{
 			printf("%s%0.2lf", print_product_price, product_list[i]->price);
 		}
-		
+
 		printf("%s%d/%d/%d", print_product_expireDate, product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
 	}
 	printf("%s%d\n", print_total_number, *number_of_products);
@@ -333,27 +325,9 @@ void print_all_the_products(Product** product_list, int* number_of_products) {
 
 //operation 5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//const char * update_barcode = "\nPlease enter product barcode you want to update:";
-//const char * update_barcode_notFound = "\nCouldn't find the product barcode, try again...";
-//const char * update_interface_string = ("\nWhat do you want to update?\n"\
-	"	1. Product name\n"\
-	"	2. Product category\n"\
-	"	3. Product quantity\n"\
-	"	4. Product price\n"\
-	"	5. Product expiration date\n"\
-	"Please choose operation [1-5]:");
-//const char * update_product_name = "\nPlease enter new product name:";
-//const char * update_product_category = "\nPlease enter new product category:";
-//const char * update_product_number = "\nPlease enter new product quantity:";
-//const char * update_product_price = "\nPlease enter new product price:";
-//const char * update_product_date = "\nPlease enter new product expiration date[dd/mm/yy]:";
-
-
-
-
 
 void update_product(Product** product_list, int* number_of_products) {
-	int option;
+	int option, new_number;
 	int i, index;
 	char barcode[BARCODE_LENGTH];
 
@@ -394,13 +368,14 @@ void update_product(Product** product_list, int* number_of_products) {
 
 			case 5:
 				printf("%s", update_product_date);
-				scanf("%s/%s/%s", product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
+				scanf("%d/%d/%d", product_list[i]->expire_date->day, product_list[i]->expire_date->month, product_list[i]->expire_date->year);
 				return;
 			}
 		}
 	}
 
 	printf("%s\n", update_barcode_notFound);
+	update_product(product_list, number_of_products);
 }
 
 
@@ -446,7 +421,7 @@ int main()
 			{
 				if (supersal.number_of_products <= MAX_NUM_PRODUCTS)
 				{
-					if(supersal.number_of_products == 0)
+					if (supersal.number_of_products == 0)
 					{
 						supersal.product_list = malloc(sizeof(Product*));
 						if (supersal.product_list == NULL) exit(1);
