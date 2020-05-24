@@ -102,15 +102,16 @@ void print_menu()
 {
 	printf("%s", main_interface);
 }
-
+//for sorting the user choices
 int get_option() {
 	int option;
 	scanf_s("%d", &option);
 	return option;
 }
 
-//operation 1 
-int check_if_product_in_market(Product** product_list, char* barcode, int number_of_products)
+//operation 1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+int check_if_product_in_market(Product** product_list, char* barcode, int number_of_products) // checks if the bacode exists in the system
 {
 	int i = 0, num_product_to_add = 0;
 
@@ -118,7 +119,7 @@ int check_if_product_in_market(Product** product_list, char* barcode, int number
 	{
 		if (product_list[i] != NULL)
 		{
-			if (strcmp(barcode, product_list[i]->barcode) == 0) // if the barcode is already in the sys 
+			if (strcmp(barcode, product_list[i]->barcode) == 0) // if the barcode is already in the system 
 			{
 				printf("%s", barcode_already_exist);
 				scanf("%d", &num_product_to_add);
@@ -131,7 +132,7 @@ int check_if_product_in_market(Product** product_list, char* barcode, int number
 
 		}
 	}
-	return 1; //if the barcode is not in the sys
+	return 1; //if the barcode is not in the system
 }
 
 void add_product(Super_market* super_market, Product* product, char* barcode)
@@ -170,7 +171,7 @@ void add_product(Super_market* super_market, Product* product, char* barcode)
 	printf("The product %s -barcode:%s ,added successfully\n", product_name, barcode);
 }
 
-Product* make_product()
+Product* make_product()//returns a pointer to a product and it's elements with memory allocation
 {
 	Product* product = malloc(sizeof(Product));
 	if (NULL == product) {
@@ -179,21 +180,25 @@ Product* make_product()
 	}
 	product->barcode = malloc(BARCODE_LENGTH + 1);
 	if (NULL == product->barcode) {
+		free(make_product);//MALMELMOOL
 		printf("Fatal error: memory allocation failed!\n");
 		exit(1);
 	}
 	product->product_name = malloc(MAX_PRODUCT_NAME_LENGTH + 1);
 	if (NULL == product->product_name) {
+		free(make_product);//MALMELMOOL
 		printf("Fatal error: memory allocation failed!\n");
 		exit(1);
 	}
 	product->product_category = malloc(MAX_CATEGORY_LENGTH + 1);
 	if (NULL == product->product_category) {
+		free(make_product);//MALMELMOOL
 		printf("Fatal error: memory allocation failed!\n");
 		exit(1);
 	}
 	product->expire_date = malloc(sizeof(date));
 	if (NULL == product->expire_date) {
+		free(make_product); //MALMELMOOL
 		printf("Fatal error: memory allocation failed!\n");
 		exit(1);
 	}
@@ -204,7 +209,7 @@ Product* make_product()
 
 //operation 2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-void free_func(Product** product_list, int i)
+void free_func(Product** product_list, int i) // a function to free memory
 {
 	free(product_list[i]->barcode);
 	free(product_list[i]->product_name);
@@ -241,19 +246,25 @@ void remove_product(Product** product_list, int* number_of_products) {
 						product_list[i] = product_list[j];
 					}
 					*number_of_products = *number_of_products - 1;
-					if (*number_of_products > 0) product_list = realloc(product_list, sizeof(Product*) * (*number_of_products));
+					if (*number_of_products > 0) {
+						product_list = realloc(product_list, sizeof(Product*) * (*number_of_products));
+						if (product_list == NULL) {
+							printf("Memory reallocation failed.\n");
+							exit(1);
+						}
+					}
 					else
 					{
 						product_list = NULL;
 					}
-				
+
 					printf("%s\n", delete_barcode_succeed);
 					return;
 				}
 			}
 		}
 		printf("%s\n", delete_barcode_cant_find);
-	} while (index);
+	} while (index);// a loop to return itself until the user enters a barcode that's in the system
 }
 
 
@@ -267,11 +278,11 @@ void check_which_product_expired(Product** product_list, int* number_of_products
 	scanf("%d/%d/%d", &expire_day, &expire_month, &expire_year);
 	printf("%s", expired_products); // headline of expired products and then we print them.
 
-	for (i = 0; i < *number_of_products; i++) 
+	for (i = 0; i < *number_of_products; i++)
 	{
-		if (product_list[i]->expire_date->year <= expire_year) 
+		if (product_list[i]->expire_date->year <= expire_year)
 		{
-			if (product_list[i]->expire_date->month <= expire_month) 
+			if (product_list[i]->expire_date->month <= expire_month)
 			{
 				if (product_list[i]->expire_date->day < expire_day)
 				{
@@ -308,9 +319,9 @@ void print_all_the_products(Product** product_list, int* number_of_products) {
 		printf("%s%s", print_product_category, product_list[i]->product_category);
 		printf("%s%d", print_product_number, product_list[i]->available);
 		price = product_list[i]->price;
-		if((price - (int)price < 1 && price - (int)price > 0))
+		if ((price - (int)price < 1 && price - (int)price > 0))
 		{
-			printf("%s%0.2lf", print_product_price, product_list[i]->price);
+			printf("%s%.3lf", print_product_price, product_list[i]->price);
 		}
 		else
 		{
@@ -413,30 +424,38 @@ int main()
 		switch (option)
 		{
 		case 1: // Adding new product to the super_market
-			if (supersal.number_of_products < MAX_NUM_PRODUCTS)
-			{
-				printf("%s", adding_product_barcode);
-				scanf("\n%[^\n]s", barcode);
-				if (check_if_product_in_market(supersal.product_list, barcode, supersal.number_of_products))// the fun return 1 if product not found, 0 if found
+			if (check_if_product_in_market(supersal.product_list, barcode, supersal.number_of_products)) {// the fun return 1 if product not found, 0 if found
+				if (supersal.number_of_products < MAX_NUM_PRODUCTS)
 				{
+					printf("%s", adding_product_barcode);
+					scanf("\n%[^\n]s", barcode);
+					if (check_if_product_in_market(supersal.product_list, barcode, supersal.number_of_products))// the fun return 1 if product not found, 0 if found
+					{
 
-					if (supersal.number_of_products == 0)
-					{
-						supersal.product_list = malloc(sizeof(Product*));
-						if (supersal.product_list == NULL) exit(1);
+						if (supersal.number_of_products == 0)
+						{
+							supersal.product_list = malloc(sizeof(Product*));
+							if (supersal.product_list == NULL) {
+								printf("Memory allocation failed.\n");
+								exit(1);
+							}
+						}
+						else
+						{
+							supersal.product_list = realloc(supersal.product_list, sizeof(Product*) * (supersal.number_of_products + 1));
+							if (supersal.product_list == NULL) {
+								printf("Memory reallocation failed.\n");
+								exit(1);
+							}
+						}
+						ptr = make_product(); // pointer to new product 
+						add_product(&supersal, ptr, barcode);
 					}
-					else
-					{
-						supersal.product_list = realloc(supersal.product_list, sizeof(Product*) * (supersal.number_of_products + 1));
-						if (supersal.product_list == NULL) exit(1);
-					}
-					ptr = make_product(); // pointer to new product 
-					add_product(&supersal, ptr, barcode);
 				}
-			}
-			else
-			{
-				printf("%s\n", too_much_products);
+				else
+				{
+					printf("%s\n", too_much_products);
+				}
 			}
 			break;
 		case 2:
